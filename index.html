@@ -156,6 +156,55 @@
             padding: 24px 32px;
         }
 
+        /* System Status Cards */
+        .system-status {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .status-card {
+            background: linear-gradient(135deg, #e6f3ff, #f0f8ff);
+            border: 1px solid #0078d4;
+            border-radius: 12px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .status-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #0078d4, #106ebe);
+        }
+
+        .status-card h3 {
+            color: #0078d4;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .status-detail {
+            font-size: 13px;
+            color: #323130;
+        }
+
+        .status-detail strong {
+            color: #0078d4;
+        }
+
         /* Configuration Section */
         .config-card {
             margin-bottom: 24px;
@@ -163,9 +212,9 @@
 
         .config-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr auto;
             gap: 24px;
-            margin-bottom: 24px;
+            align-items: end;
         }
 
         .config-item {
@@ -194,42 +243,6 @@
             outline: none;
             border-color: #0078d4;
             box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.2);
-        }
-
-        .cloudinary-status {
-            background: linear-gradient(135deg, #e6f3ff, #f0f8ff);
-            border: 1px solid #0078d4;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 24px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .cloudinary-status::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #0078d4, #106ebe);
-        }
-
-        .cloudinary-info {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 16px;
-            margin-top: 12px;
-        }
-
-        .cloudinary-detail {
-            font-size: 13px;
-            color: #323130;
-        }
-
-        .cloudinary-detail strong {
-            color: #0078d4;
         }
 
         /* Navigation Tabs */
@@ -646,7 +659,7 @@
                 font-size: 20px;
             }
 
-            .cloudinary-info {
+            .status-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -679,13 +692,13 @@
                     <div class="app-icon">📄</div>
                     <div>
                         <h1>Lease Document Manager</h1>
-                        <p>Intelligent document processing with AI analysis</p>
+                        <p>AI-powered document processing with Hunyuan translation</p>
                     </div>
                 </div>
                 <div class="header-actions">
                     <div class="status-indicator">
                         <div class="status-dot"></div>
-                        <span>System Ready</span>
+                        <span id="systemStatus">System Ready</span>
                     </div>
                 </div>
             </div>
@@ -693,23 +706,62 @@
 
         <!-- Main Content -->
         <main class="main-content">
-            <!-- Cloudinary Status Card -->
-            <div class="card cloudinary-status">
-                <h3 style="color: #0078d4; font-size: 16px; font-weight: 600; margin-bottom: 8px;">
-                    ✅ Cloudinary Storage Connected
-                </h3>
-                <div class="cloudinary-info">
-                    <div class="cloudinary-detail">
-                        <strong>Cloud Name:</strong> mediaflows_86fd4d79-f690-41d0-9896-d1b8f9ee5d9d
+            <!-- System Status Cards -->
+            <div class="system-status">
+                <!-- Cloudinary Status -->
+                <div class="status-card">
+                    <h3>✅ Cloudinary Storage</h3>
+                    <div class="status-grid">
+                        <div class="status-detail">
+                            <strong>Cloud:</strong> mediaflows_86fd4d79...
+                        </div>
+                        <div class="status-detail">
+                            <strong>Preset:</strong> lease_documents
+                        </div>
+                        <div class="status-detail">
+                            <strong>Folder:</strong> lease-docs
+                        </div>
+                        <div class="status-detail">
+                            <strong>Status:</strong> Connected
+                        </div>
                     </div>
-                    <div class="cloudinary-detail">
-                        <strong>Upload Preset:</strong> lease_documents (Unsigned)
+                </div>
+
+                <!-- Modal AI Status -->
+                <div class="status-card">
+                    <h3>🤖 Hunyuan AI System</h3>
+                    <div class="status-grid">
+                        <div class="status-detail">
+                            <strong>Model:</strong> Hunyuan-MT-7B
+                        </div>
+                        <div class="status-detail">
+                            <strong>Translation:</strong> Ready
+                        </div>
+                        <div class="status-detail">
+                            <strong>Extraction:</strong> Ready
+                        </div>
+                        <div class="status-detail">
+                            <strong>Status:</strong> <span id="modalStatus">Checking...</span>
+                        </div>
                     </div>
-                    <div class="cloudinary-detail">
-                        <strong>Storage Folder:</strong> lease-docs
-                    </div>
-                    <div class="cloudinary-detail">
-                        <strong>Status:</strong> Ready for uploads
+                </div>
+
+                <!-- Pinecone Status -->
+                <div class="status-card">
+                    <h3>🗄️ Vector Database</h3>
+                    <div class="status-grid">
+                        <div class="status-detail">
+                            <strong>Database:</strong> lease-documents
+                        </div>
+                        <div class="status-detail">
+                            <strong>Dimensions:</strong> 384
+                        </div>
+                        <div class="status-detail">
+                            <strong>Documents:</strong> <span id="docCount">Loading...</span>
+                        </div>
+                        <div class="status-detail">
+                            <strong>Status:</strong> Connected
+                        </div>
                     </div>
                 </div>
             </div>
@@ -717,19 +769,19 @@
             <!-- Configuration Card -->
             <div class="card config-card">
                 <div class="card-header">
-                    <div class="card-title">System Configuration</div>
-                    <div class="card-subtitle">Configure your N8N endpoint for document processing</div>
+                    <div class="card-title">N8N Integration</div>
+                    <div class="card-subtitle">Configure your N8N webhook endpoint for OCR processing</div>
                 </div>
                 <div class="card-content">
                     <div class="config-grid">
                         <div class="config-item">
-                            <label class="config-label">N8N Webhook URL</label>
+                            <label class="config-label">N8N Webhook URL (Your OCR Endpoint)</label>
                             <input type="url" id="n8nUrl" class="config-input" 
                                    placeholder="https://your-n8n-instance.onrender.com/webhook/lease-upload">
                         </div>
-                        <div class="config-item" style="display: flex; align-items: flex-end; gap: 12px;">
+                        <div style="display: flex; gap: 12px;">
                             <button onclick="saveConfig()" class="btn">Save Configuration</button>
-                            <button onclick="testConnection()" class="btn btn-secondary">Test Connection</button>
+                            <button onclick="testConnection()" class="btn btn-secondary">Test N8N</button>
                         </div>
                     </div>
                 </div>
@@ -813,7 +865,7 @@
     </div>
 
     <script>
-        // Configuration with YOUR ACTUAL CLOUDINARY SETTINGS
+        // Configuration with YOUR ACTUAL SETTINGS
         let config = {
             n8nUrl: localStorage.getItem('n8nUrl') || '',
             
@@ -821,7 +873,11 @@
             cloudinaryUrl: 'https://api.cloudinary.com/v1_1/mediaflows_86fd4d79-f690-41d0-9896-d1b8f9ee5d9d/upload',
             cloudName: 'mediaflows_86fd4d79-f690-41d0-9896-d1b8f9ee5d9d',
             uploadPreset: 'lease_documents',
-            apiKey: '488918591967179'
+            apiKey: '488918591967179',
+            
+            // YOUR MODAL ENDPOINTS:
+            modalHealthUrl: 'https://eric-18--lease-hunyuan-system-health-check.modal.run',
+            modalProcessUrl: 'https://eric-18--lease-hunyuan-system-process-lease-with-hunyuan.modal.run'
         };
 
         // Processing queue
@@ -834,10 +890,28 @@
         // Initialize
         window.addEventListener('load', () => {
             loadDocumentHistory();
+            checkModalHealth();
             if (config.n8nUrl) {
                 testConnection();
             }
         });
+
+        async function checkModalHealth() {
+            try {
+                const response = await fetch(config.modalHealthUrl);
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('modalStatus').textContent = 'Online';
+                    document.getElementById('systemStatus').textContent = 'All Systems Ready';
+                } else {
+                    throw new Error('Health check failed');
+                }
+            } catch (error) {
+                document.getElementById('modalStatus').textContent = 'Offline';
+                document.getElementById('systemStatus').textContent = 'System Issues';
+                console.error('Modal health check failed:', error);
+            }
+        }
 
         function showTab(tabName) {
             // Hide all tabs
@@ -971,7 +1045,7 @@
                     upload: 'processing',
                     ocr: 'pending',
                     translation: 'pending',
-                    vectorization: 'pending',
+                    extraction: 'pending',
                     storage: 'pending'
                 }
             };
@@ -998,7 +1072,7 @@
                 if (processResult.success) {
                     updateProcessStep(fileId, 'ocr', 'complete');
                     updateProcessStep(fileId, 'translation', 'complete');
-                    updateProcessStep(fileId, 'vectorization', 'complete');
+                    updateProcessStep(fileId, 'extraction', 'complete');
                     updateProcessStep(fileId, 'storage', 'complete');
                     updateItemStatus(fileId, 'completed');
                 } else {
@@ -1072,7 +1146,8 @@
                     fileUrl: fileUrl,
                     timestamp: new Date().toISOString(),
                     source: 'lease_drop_zone',
-                    cloudinary_metadata: metadata
+                    cloudinary_metadata: metadata,
+                    modal_endpoint: config.modalProcessUrl
                 })
             });
 
@@ -1129,9 +1204,9 @@
                 const stepNames = {
                     upload: 'Cloudinary Upload',
                     ocr: 'OCR Processing', 
-                    translation: 'Translation',
-                    vectorization: 'AI Analysis',
-                    storage: 'Database Storage'
+                    translation: 'Hunyuan Translation',
+                    extraction: 'AI Information Extraction',
+                    storage: 'Pinecone Storage'
                 };
                 
                 return `
@@ -1179,7 +1254,7 @@
                         upload: 'Upload',
                         ocr: 'OCR', 
                         translation: 'Translation',
-                        vectorization: 'Analysis',
+                        extraction: 'Extraction',
                         storage: 'Storage'
                     };
                     
@@ -1257,6 +1332,9 @@
             
             historyDiv.innerHTML = historyHtml;
         }
+
+        // Check system status periodically
+        setInterval(checkModalHealth, 30000); // Check every 30 seconds
     </script>
 </body>
 </html>
