@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lease Document Drop Zone</title>
+    <title>Lease Document Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,386 +13,815 @@
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0078d4 0%, #106ebe 25%, #005a9e 50%, #004578 75%, #003355 100%);
             min-height: 100vh;
-            padding: 20px;
+            color: #323130;
+            overflow-x: hidden;
         }
-        
-        .container {
-            max-width: 1200px;
+
+        .app-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Fluent Design Header */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 120, 212, 0.1);
+            padding: 24px 32px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .header-content {
+            max-width: 1400px;
             margin: 0 auto;
-            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .app-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #0078d4, #106ebe);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #323130;
+            margin: 0;
+        }
+
+        .header p {
+            font-size: 14px;
+            color: #605e5c;
+            margin: 2px 0 0 0;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(0, 120, 212, 0.1);
             border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #107c10;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 32px;
+            width: 100%;
+        }
+
+        /* Fluent Cards */
+        .card {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             overflow: hidden;
         }
-        
-        .header {
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
+
+        .card:hover {
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
         }
-        
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
+
+        .card-header {
+            padding: 24px 32px 16px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
         }
-        
-        .main-content {
-            padding: 40px;
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #323130;
+            margin-bottom: 4px;
         }
-        
-        .config-section {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .config-input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            margin: 10px 0;
+
+        .card-subtitle {
             font-size: 14px;
+            color: #605e5c;
         }
-        
-        .upload-zone {
-            border: 3px dashed #dee2e6;
-            border-radius: 20px;
-            padding: 60px 40px;
-            text-align: center;
-            margin: 30px 0;
-            transition: all 0.3s ease;
-            background: #f8f9fa;
+
+        .card-content {
+            padding: 24px 32px;
+        }
+
+        /* Configuration Section */
+        .config-card {
+            margin-bottom: 24px;
+        }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .config-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .config-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #323130;
+        }
+
+        .config-input {
+            padding: 12px 16px;
+            border: 1px solid #d1d1d1;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .config-input:focus {
+            outline: none;
+            border-color: #0078d4;
+            box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.2);
+        }
+
+        .cloudinary-status {
+            background: linear-gradient(135deg, #e6f3ff, #f0f8ff);
+            border: 1px solid #0078d4;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 24px;
             position: relative;
-            min-height: 300px;
+            overflow: hidden;
+        }
+
+        .cloudinary-status::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #0078d4, #106ebe);
+        }
+
+        .cloudinary-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-top: 12px;
+        }
+
+        .cloudinary-detail {
+            font-size: 13px;
+            color: #323130;
+        }
+
+        .cloudinary-detail strong {
+            color: #0078d4;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            background: rgba(248, 249, 250, 0.8);
+            border-radius: 8px;
+            padding: 4px;
+            margin-bottom: 32px;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-tab {
+            flex: 1;
+            background: none;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #605e5c;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .nav-tab.active {
+            background: white;
+            color: #0078d4;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-tab:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.7);
+            color: #323130;
+        }
+
+        /* Upload Zone */
+        .upload-zone {
+            background: linear-gradient(135deg, #f8f9fa, #ffffff);
+            border: 2px dashed #d1d1d1;
+            border-radius: 16px;
+            padding: 48px 32px;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            min-height: 320px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
         }
-        
+
+        .upload-zone::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 120, 212, 0.05) 0%, transparent 70%);
+            transition: all 0.3s ease;
+            opacity: 0;
+        }
+
         .upload-zone:hover {
-            border-color: #667eea;
-            background: #f0f4ff;
+            border-color: #0078d4;
+            background: linear-gradient(135deg, #f0f8ff, #ffffff);
             transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 120, 212, 0.15);
         }
-        
+
+        .upload-zone:hover::before {
+            opacity: 1;
+        }
+
         .upload-zone.dragover {
-            border-color: #28a745;
-            background: #e8f5e8;
+            border-color: #107c10;
+            background: linear-gradient(135deg, #f0fff4, #ffffff);
             transform: scale(1.02);
+            box-shadow: 0 12px 32px rgba(16, 124, 16, 0.2);
         }
-        
+
         .upload-zone.uploading {
-            border-color: #ffc107;
-            background: #fff8e1;
+            border-color: #ffaa44;
+            background: linear-gradient(135deg, #fffef0, #ffffff);
         }
-        
+
         .upload-icon {
-            font-size: 4em;
-            color: #667eea;
-            margin-bottom: 20px;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #0078d4, #106ebe);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            position: relative;
+            z-index: 1;
         }
-        
+
+        .upload-icon svg {
+            width: 40px;
+            height: 40px;
+            fill: white;
+        }
+
         .upload-text h3 {
-            font-size: 1.8em;
-            color: #2c3e50;
-            margin-bottom: 15px;
+            font-size: 24px;
+            font-weight: 600;
+            color: #323130;
+            margin-bottom: 12px;
         }
-        
+
         .upload-text p {
-            font-size: 1.1em;
-            color: #666;
-            margin-bottom: 25px;
+            font-size: 16px;
+            color: #605e5c;
+            margin-bottom: 8px;
+            line-height: 1.5;
         }
-        
+
+        .upload-text .upload-hint {
+            font-size: 14px;
+            color: #8a8886;
+        }
+
         .file-input {
             display: none;
         }
-        
+
         .upload-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0078d4, #106ebe);
             color: white;
-            padding: 15px 40px;
             border: none;
-            border-radius: 50px;
-            font-size: 18px;
-            font-weight: 600;
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
             cursor: pointer;
-            transition: all 0.3s;
-            margin: 10px;
+            transition: all 0.2s ease;
+            margin-top: 24px;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 4px 12px rgba(0, 120, 212, 0.3);
         }
-        
+
         .upload-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 6px 16px rgba(0, 120, 212, 0.4);
         }
-        
-        .file-info {
-            background: #e3f2fd;
-            border: 1px solid #90caf9;
-            border-radius: 10px;
-            padding: 15px;
-            margin: 10px 0;
+
+        .upload-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Buttons */
+        .btn {
+            background: #0078d4;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
             font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
         }
-        
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: #e9ecef;
-            border-radius: 4px;
-            margin: 15px 0;
-            overflow: hidden;
+
+        .btn:hover {
+            background: #106ebe;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 120, 212, 0.3);
         }
-        
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #28a745, #20c997);
-            width: 0%;
-            transition: width 0.3s ease;
-            border-radius: 4px;
+
+        .btn-secondary {
+            background: #f3f2f1;
+            color: #323130;
         }
-        
-        .results-section {
-            margin-top: 40px;
+
+        .btn-secondary:hover {
+            background: #edebe9;
         }
-        
+
+        /* Processing Results */
         .result-item {
             background: white;
-            border: 1px solid #dee2e6;
-            border-radius: 15px;
-            padding: 25px;
-            margin: 20px 0;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
-        
-        .result-success {
-            border-left: 5px solid #28a745;
-            background: #f8fff8;
+
+        .result-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: #d1d1d1;
         }
-        
-        .result-error {
-            border-left: 5px solid #dc3545;
-            background: #fff8f8;
+
+        .result-success::before {
+            background: linear-gradient(90deg, #107c10, #13a10e);
         }
-        
-        .result-processing {
-            border-left: 5px solid #ffc107;
-            background: #fffef8;
+
+        .result-error::before {
+            background: linear-gradient(90deg, #d13438, #e73c41);
         }
-        
-        .status-badge {
-            display: inline-block;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            margin-left: 10px;
+
+        .result-processing::before {
+            background: linear-gradient(90deg, #ffaa44, #ff8c00);
+            animation: shimmer 2s infinite;
         }
-        
-        .status-success {
-            background: #d4edda;
-            color: #155724;
+
+        @keyframes shimmer {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
         }
-        
-        .status-error {
-            background: #f8d7da;
-            color: #721c24;
-        }
-        
-        .status-processing {
-            background: #fff3cd;
-            color: #856404;
-        }
-        
-        .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin: 5px;
-        }
-        
-        .btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
-        }
-        
-        .tabs {
+
+        .result-header {
             display: flex;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #eee;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
         }
-        
-        .tab {
-            padding: 15px 30px;
-            cursor: pointer;
-            background: none;
-            border: none;
+
+        .result-title {
             font-size: 16px;
             font-weight: 600;
-            color: #666;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s;
+            color: #323130;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        
-        .tab.active {
-            color: #667eea;
-            border-bottom-color: #667eea;
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
         }
-        
-        .tab-content {
-            display: none;
+
+        .status-success {
+            background: #dff6dd;
+            color: #107c10;
         }
-        
-        .tab-content.active {
-            display: block;
+
+        .status-error {
+            background: #fde7e9;
+            color: #d13438;
         }
-        
+
+        .status-processing {
+            background: #fff4ce;
+            color: #8a8886;
+        }
+
+        /* Processing Steps */
         .processing-steps {
-            background: #f8f9fa;
-            border-radius: 10px;
+            background: #fafafa;
+            border-radius: 8px;
             padding: 20px;
-            margin: 20px 0;
+            margin: 16px 0;
         }
-        
+
         .step {
             display: flex;
             align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid #dee2e6;
+            padding: 12px 0;
+            position: relative;
         }
-        
-        .step:last-child {
-            border-bottom: none;
+
+        .step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 40px;
+            width: 2px;
+            height: 20px;
+            background: #e1dfdd;
         }
-        
+
         .step-icon {
-            width: 30px;
-            height: 30px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 15px;
-            font-weight: bold;
+            margin-right: 16px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
         }
-        
+
         .step-pending {
-            background: #e9ecef;
-            color: #6c757d;
+            background: #f3f2f1;
+            color: #8a8886;
         }
-        
+
         .step-processing {
-            background: #fff3cd;
-            color: #856404;
+            background: #fff4ce;
+            color: #8a8886;
+            animation: pulse 2s infinite;
         }
-        
+
         .step-complete {
-            background: #d4edda;
-            color: #155724;
+            background: #dff6dd;
+            color: #107c10;
         }
-        
+
         .step-error {
-            background: #f8d7da;
-            color: #721c24;
+            background: #fde7e9;
+            color: #d13438;
+        }
+
+        .step-text {
+            font-size: 14px;
+            font-weight: 500;
+            color: #323130;
+        }
+
+        /* Empty States */
+        .empty-state {
+            text-align: center;
+            padding: 64px 32px;
+            color: #8a8886;
+        }
+
+        .empty-state-icon {
+            width: 64px;
+            height: 64px;
+            background: #f3f2f1;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 24px;
+        }
+
+        .empty-state h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #605e5c;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* Messages */
+        .message {
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin: 16px 0;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .message-success {
+            background: #dff6dd;
+            color: #107c10;
+            border: 1px solid #107c10;
+        }
+
+        .message-error {
+            background: #fde7e9;
+            color: #d13438;
+            border: 1px solid #d13438;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 16px;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+
+            .config-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-tabs {
+                flex-direction: column;
+            }
+
+            .upload-zone {
+                padding: 32px 16px;
+                min-height: 280px;
+            }
+
+            .upload-text h3 {
+                font-size: 20px;
+            }
+
+            .cloudinary-info {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a1a1a1;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>📁 Lease Document Drop Zone</h1>
-            <p>Upload lease documents for OCR processing, translation, and AI analysis</p>
-        </div>
-        
-        <div class="main-content">
-            <!-- Configuration Section -->
-            <div class="config-section">
-                <h3>⚙️ System Configuration</h3>
-                <p><strong>N8N Webhook URL (Your OCR Endpoint):</strong></p>
-                <input type="url" id="n8nUrl" class="config-input" 
-                       placeholder="https://your-n8n-instance.onrender.com/webhook/lease-upload">
-                
-                <p><strong>File Storage Provider:</strong></p>
-                <select id="storageProvider" class="config-input">
-                    <option value="cloudinary">Cloudinary (Free 25GB)</option>
-                    <option value="uploadcare">Uploadcare (Free 3GB)</option>
-                    <option value="filestack">Filestack (Free 100MB)</option>
-                </select>
-                
-                <button onclick="saveConfig()" class="btn">Save Configuration</button>
-                <button onclick="testConnection()" class="btn">Test N8N Connection</button>
+    <div class="app-container">
+        <!-- Fluent Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="header-title">
+                    <div class="app-icon">📄</div>
+                    <div>
+                        <h1>Lease Document Manager</h1>
+                        <p>Intelligent document processing with AI analysis</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <div class="status-indicator">
+                        <div class="status-dot"></div>
+                        <span>System Ready</span>
+                    </div>
+                </div>
             </div>
-            
-            <div class="tabs">
-                <button class="tab active" onclick="showTab('upload')">📄 Upload Documents</button>
-                <button class="tab" onclick="showTab('status')">📊 Processing Status</button>
-                <button class="tab" onclick="showTab('history')">📋 Document History</button>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Cloudinary Status Card -->
+            <div class="card cloudinary-status">
+                <h3 style="color: #0078d4; font-size: 16px; font-weight: 600; margin-bottom: 8px;">
+                    ✅ Cloudinary Storage Connected
+                </h3>
+                <div class="cloudinary-info">
+                    <div class="cloudinary-detail">
+                        <strong>Cloud Name:</strong> mediaflows_86fd4d79-f690-41d0-9896-d1b8f9ee5d9d
+                    </div>
+                    <div class="cloudinary-detail">
+                        <strong>Upload Preset:</strong> lease_documents (Unsigned)
+                    </div>
+                    <div class="cloudinary-detail">
+                        <strong>Storage Folder:</strong> lease-docs
+                    </div>
+                    <div class="cloudinary-detail">
+                        <strong>Status:</strong> Ready for uploads
+                    </div>
+                </div>
             </div>
-            
+
+            <!-- Configuration Card -->
+            <div class="card config-card">
+                <div class="card-header">
+                    <div class="card-title">System Configuration</div>
+                    <div class="card-subtitle">Configure your N8N endpoint for document processing</div>
+                </div>
+                <div class="card-content">
+                    <div class="config-grid">
+                        <div class="config-item">
+                            <label class="config-label">N8N Webhook URL</label>
+                            <input type="url" id="n8nUrl" class="config-input" 
+                                   placeholder="https://your-n8n-instance.onrender.com/webhook/lease-upload">
+                        </div>
+                        <div class="config-item" style="display: flex; align-items: flex-end; gap: 12px;">
+                            <button onclick="saveConfig()" class="btn">Save Configuration</button>
+                            <button onclick="testConnection()" class="btn btn-secondary">Test Connection</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Tabs -->
+            <nav class="nav-tabs">
+                <button class="nav-tab active" onclick="showTab('upload')">
+                    📄 Upload Documents
+                </button>
+                <button class="nav-tab" onclick="showTab('status')">
+                    📊 Processing Status
+                </button>
+                <button class="nav-tab" onclick="showTab('history')">
+                    📋 Document History
+                </button>
+            </nav>
+
             <!-- Upload Tab -->
             <div id="upload-tab" class="tab-content active">
-                <div class="upload-zone" id="uploadZone">
-                    <div class="upload-icon">📄</div>
-                    <div class="upload-text">
-                        <h3>Drop Lease Documents Here</h3>
-                        <p>Drag and drop PDF files or click to browse</p>
-                        <p style="font-size: 0.9em; color: #888;">
-                            Supported: PDF files • Max size: 50MB per file • Multiple files supported
-                        </p>
+                <div class="card">
+                    <div class="upload-zone" id="uploadZone">
+                        <div class="upload-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                            </svg>
+                        </div>
+                        <div class="upload-text">
+                            <h3>Drop lease documents here</h3>
+                            <p>Drag and drop PDF files or click to browse</p>
+                            <p class="upload-hint">Supported: PDF files • Max size: 50MB • Multiple files supported</p>
+                        </div>
+                        <input type="file" id="fileInput" class="file-input" accept=".pdf" multiple>
+                        <button onclick="document.getElementById('fileInput').click()" class="upload-btn">
+                            Select PDF Files
+                        </button>
                     </div>
-                    <input type="file" id="fileInput" class="file-input" accept=".pdf" multiple>
-                    <button onclick="document.getElementById('fileInput').click()" class="upload-btn">
-                        📁 Select PDF Files
-                    </button>
+                    
+                    <div id="uploadResults"></div>
                 </div>
-                
-                <div id="uploadResults"></div>
             </div>
-            
+
             <!-- Status Tab -->
-            <div id="status-tab" class="tab-content">
-                <h3>📊 Current Processing Status</h3>
-                <div id="currentProcessing">
-                    <p style="text-align: center; color: #666; padding: 40px;">
-                        No documents currently being processed
-                    </p>
+            <div id="status-tab" class="tab-content" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Current Processing Status</div>
+                        <div class="card-subtitle">Monitor documents being processed in real-time</div>
+                    </div>
+                    <div class="card-content">
+                        <div id="currentProcessing">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">⏳</div>
+                                <h3>No active processing</h3>
+                                <p>Upload documents to see processing status here</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            
+
             <!-- History Tab -->
-            <div id="history-tab" class="tab-content">
-                <h3>📋 Document Processing History</h3>
-                <div id="documentHistory">
-                    <p style="text-align: center; color: #666; padding: 40px;">
-                        No documents processed yet
-                    </p>
+            <div id="history-tab" class="tab-content" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Document Processing History</div>
+                        <div class="card-subtitle">View all previously processed documents</div>
+                    </div>
+                    <div class="card-content">
+                        <div id="documentHistory">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">📋</div>
+                                <h3>No documents processed yet</h3>
+                                <p>Your document processing history will appear here</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+        </main>
     </div>
 
     <script>
-        // Configuration
+        // Configuration with YOUR ACTUAL CLOUDINARY SETTINGS
         let config = {
             n8nUrl: localStorage.getItem('n8nUrl') || '',
-            storageProvider: localStorage.getItem('storageProvider') || 'cloudinary',
-            cloudinaryUrl: 'https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/upload',
-            uploadPreset: 'lease_documents'
+            
+            // YOUR REAL CLOUDINARY CONFIGURATION:
+            cloudinaryUrl: 'https://api.cloudinary.com/v1_1/mediaflows_86fd4d79-f690-41d0-9896-d1b8f9ee5d9d/upload',
+            cloudName: 'mediaflows_86fd4d79-f690-41d0-9896-d1b8f9ee5d9d',
+            uploadPreset: 'lease_documents',
+            apiKey: '488918591967179'
         };
 
         // Processing queue
@@ -400,7 +830,6 @@
 
         // Load saved configuration
         document.getElementById('n8nUrl').value = config.n8nUrl;
-        document.getElementById('storageProvider').value = config.storageProvider;
 
         // Initialize
         window.addEventListener('load', () => {
@@ -413,14 +842,14 @@
         function showTab(tabName) {
             // Hide all tabs
             document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
+                tab.style.display = 'none';
             });
-            document.querySelectorAll('.tab').forEach(tab => {
+            document.querySelectorAll('.nav-tab').forEach(tab => {
                 tab.classList.remove('active');
             });
             
             // Show selected tab
-            document.getElementById(tabName + '-tab').classList.add('active');
+            document.getElementById(tabName + '-tab').style.display = 'block';
             event.target.classList.add('active');
             
             if (tabName === 'history') {
@@ -432,7 +861,6 @@
 
         function saveConfig() {
             config.n8nUrl = document.getElementById('n8nUrl').value.trim();
-            config.storageProvider = document.getElementById('storageProvider').value;
             
             if (!config.n8nUrl) {
                 showMessage('Please enter a valid N8N URL', 'error');
@@ -440,9 +868,7 @@
             }
             
             localStorage.setItem('n8nUrl', config.n8nUrl);
-            localStorage.setItem('storageProvider', config.storageProvider);
-            
-            showMessage('Configuration saved!', 'success');
+            showMessage('Configuration saved successfully!', 'success');
         }
 
         async function testConnection() {
@@ -459,30 +885,24 @@
                 });
 
                 if (response.ok) {
-                    showMessage('✅ N8N connection successful!', 'success');
+                    showMessage('N8N connection successful!', 'success');
                 } else {
                     throw new Error(`HTTP ${response.status}`);
                 }
             } catch (error) {
-                showMessage(`❌ N8N connection failed: ${error.message}`, 'error');
+                showMessage(`N8N connection failed: ${error.message}`, 'error');
             }
         }
 
         function showMessage(message, type) {
             const messageDiv = document.createElement('div');
-            messageDiv.style.cssText = `
-                padding: 15px;
-                border-radius: 8px;
-                margin: 15px 0;
-                font-weight: 500;
-                ${type === 'success' ? 
-                    'background: #d4edda; color: #155724; border: 1px solid #c3e6c3;' : 
-                    'background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;'
-                }
+            messageDiv.className = `message message-${type}`;
+            messageDiv.innerHTML = `
+                <span>${type === 'success' ? '✅' : '❌'}</span>
+                <span>${message}</span>
             `;
-            messageDiv.textContent = message;
             
-            const configSection = document.querySelector('.config-section');
+            const configSection = document.querySelector('.config-card .card-content');
             configSection.appendChild(messageDiv);
             
             setTimeout(() => messageDiv.remove(), 5000);
@@ -561,14 +981,19 @@
             updateProcessingDisplay(processItem);
 
             try {
-                // Step 1: Upload file to storage
+                // Step 1: Upload file to Cloudinary
                 updateProcessStep(fileId, 'upload', 'processing');
-                const fileUrl = await uploadFileToStorage(file);
+                const uploadResult = await uploadFileToCloudinary(file);
                 updateProcessStep(fileId, 'upload', 'complete');
                 
                 // Step 2: Send to N8N for OCR processing
                 updateProcessStep(fileId, 'ocr', 'processing');
-                const processResult = await sendToN8N(fileId, file.name, fileUrl);
+                const processResult = await sendToN8N(fileId, file.name, uploadResult.url, {
+                    cloudinary_public_id: uploadResult.public_id,
+                    file_format: uploadResult.format,
+                    file_size_bytes: uploadResult.bytes,
+                    upload_timestamp: uploadResult.created_at
+                });
                 
                 if (processResult.success) {
                     updateProcessStep(fileId, 'ocr', 'complete');
@@ -587,13 +1012,32 @@
             }
         }
 
-        async function uploadFileToStorage(file) {
-            // Using Cloudinary as default - you can switch based on config.storageProvider
+        async function uploadFileToCloudinary(file) {
+            console.log('Starting Cloudinary upload:', file.name);
+            
             const formData = new FormData();
+            
+            // Required fields
             formData.append('file', file);
             formData.append('upload_preset', config.uploadPreset);
-            formData.append('folder', 'lease-documents');
+            
+            // Organization
+            formData.append('folder', 'lease-docs');
             formData.append('resource_type', 'auto');
+            
+            // Generate meaningful public ID
+            const timestamp = new Date().toISOString().slice(0, 19).replace(/[-:]/g, '');
+            const cleanFilename = file.name.replace(/[^a-zA-Z0-9.-]/g, '_').replace('.pdf', '');
+            formData.append('public_id', `lease_${timestamp}_${cleanFilename}`);
+            
+            // Add metadata
+            formData.append('tags', 'lease,document,pdf,production');
+            formData.append('context', JSON.stringify({
+                original_filename: file.name,
+                upload_source: 'lease_drop_zone',
+                upload_timestamp: new Date().toISOString(),
+                file_size_mb: (file.size / 1024 / 1024).toFixed(2)
+            }));
 
             const response = await fetch(config.cloudinaryUrl, {
                 method: 'POST',
@@ -601,14 +1045,24 @@
             });
 
             if (!response.ok) {
-                throw new Error(`Upload failed: ${response.status}`);
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(`Cloudinary upload failed: ${response.status} - ${errorData.message || 'Unknown error'}`);
             }
 
             const result = await response.json();
-            return result.secure_url;
+            console.log('Cloudinary upload success:', result);
+            
+            return {
+                url: result.secure_url,
+                public_id: result.public_id,
+                format: result.format,
+                bytes: result.bytes,
+                created_at: result.created_at,
+                folder: result.folder
+            };
         }
 
-        async function sendToN8N(fileId, filename, fileUrl) {
+        async function sendToN8N(fileId, filename, fileUrl, metadata) {
             const response = await fetch(config.n8nUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -617,7 +1071,8 @@
                     filename: filename,
                     fileUrl: fileUrl,
                     timestamp: new Date().toISOString(),
-                    source: 'lease_drop_zone'
+                    source: 'lease_drop_zone',
+                    cloudinary_metadata: metadata
                 })
             });
 
@@ -646,7 +1101,6 @@
                 updateHistoryItem(fileId, item);
                 
                 if (status === 'completed' || status === 'error') {
-                    // Remove from processing queue after delay
                     setTimeout(() => {
                         processingQueue = processingQueue.filter(p => p.id !== fileId);
                         updateProcessingStatus();
@@ -673,31 +1127,33 @@
             
             const stepsHtml = Object.entries(item.steps).map(([step, status]) => {
                 const stepNames = {
-                    upload: '📁 File Upload',
-                    ocr: '👁️ OCR Processing', 
-                    translation: '🌐 Translation',
-                    vectorization: '🧠 AI Analysis',
-                    storage: '💾 Database Storage'
+                    upload: 'Cloudinary Upload',
+                    ocr: 'OCR Processing', 
+                    translation: 'Translation',
+                    vectorization: 'AI Analysis',
+                    storage: 'Database Storage'
                 };
                 
                 return `
                     <div class="step">
                         <div class="step-icon step-${status}">${status === 'complete' ? '✓' : status === 'error' ? '✗' : '●'}</div>
-                        <span>${stepNames[step] || step}</span>
+                        <span class="step-text">${stepNames[step] || step}</span>
                     </div>
                 `;
             }).join('');
             
             itemDiv.innerHTML = `
-                <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 15px;">
-                    <h4>📄 ${item.filename}</h4>
+                <div class="result-header">
+                    <div class="result-title">
+                        📄 ${item.filename}
+                    </div>
                     <span class="status-badge status-${item.status}">${item.status}</span>
                 </div>
                 <div class="processing-steps">
                     ${stepsHtml}
                 </div>
-                ${item.error ? `<div style="color: #dc3545; margin-top: 10px;"><strong>Error:</strong> ${item.error}</div>` : ''}
-                <div style="font-size: 12px; color: #666; margin-top: 10px;">
+                ${item.error ? `<div style="color: #d13438; margin-top: 16px; font-size: 14px;"><strong>Error:</strong> ${item.error}</div>` : ''}
+                <div style="font-size: 12px; color: #8a8886; margin-top: 16px; padding-top: 16px; border-top: 1px solid #f3f2f1;">
                     File ID: ${item.id} • Size: ${(item.size / 1024 / 1024).toFixed(2)} MB • Started: ${new Date(item.uploadTime).toLocaleString()}
                 </div>
             `;
@@ -707,32 +1163,41 @@
             const statusDiv = document.getElementById('currentProcessing');
             
             if (processingQueue.length === 0) {
-                statusDiv.innerHTML = '<p style="text-align: center; color: #666; padding: 40px;">No documents currently being processed</p>';
+                statusDiv.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">⏳</div>
+                        <h3>No active processing</h3>
+                        <p>Upload documents to see processing status here</p>
+                    </div>
+                `;
                 return;
             }
             
             const processingHtml = processingQueue.map(item => {
                 const stepsHtml = Object.entries(item.steps).map(([step, status]) => {
                     const stepNames = {
-                        upload: '📁 Upload',
-                        ocr: '👁️ OCR', 
-                        translation: '🌐 Translation',
-                        vectorization: '🧠 Analysis',
-                        storage: '💾 Storage'
+                        upload: 'Upload',
+                        ocr: 'OCR', 
+                        translation: 'Translation',
+                        vectorization: 'Analysis',
+                        storage: 'Storage'
                     };
                     
-                    return `<span style="margin: 0 5px; padding: 3px 8px; border-radius: 12px; font-size: 11px; background: ${
-                        status === 'complete' ? '#d4edda' : 
-                        status === 'processing' ? '#fff3cd' : 
-                        status === 'error' ? '#f8d7da' : '#e9ecef'
+                    return `<span style="margin: 0 8px; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 500; background: ${
+                        status === 'complete' ? '#dff6dd; color: #107c10' : 
+                        status === 'processing' ? '#fff4ce; color: #8a8886' : 
+                        status === 'error' ? '#fde7e9; color: #d13438' : '#f3f2f1; color: #8a8886'
                     }">${stepNames[step]}</span>`;
                 }).join('');
                 
                 return `
-                    <div class="result-item result-processing" style="margin: 15px 0;">
-                        <h5>📄 ${item.filename}</h5>
-                        <div style="margin: 10px 0;">${stepsHtml}</div>
-                        <div style="font-size: 12px; color: #666;">Processing since ${new Date(item.uploadTime).toLocaleTimeString()}</div>
+                    <div class="result-item result-processing" style="margin-bottom: 16px;">
+                        <div class="result-header">
+                            <div class="result-title">📄 ${item.filename}</div>
+                            <span class="status-badge status-processing">Processing</span>
+                        </div>
+                        <div style="margin: 16px 0;">${stepsHtml}</div>
+                        <div style="font-size: 12px; color: #8a8886;">Processing since ${new Date(item.uploadTime).toLocaleTimeString()}</div>
                     </div>
                 `;
             }).join('');
@@ -760,7 +1225,13 @@
             const historyDiv = document.getElementById('documentHistory');
             
             if (documentHistory.length === 0) {
-                historyDiv.innerHTML = '<p style="text-align: center; color: #666; padding: 40px;">No documents processed yet</p>';
+                historyDiv.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📋</div>
+                        <h3>No documents processed yet</h3>
+                        <p>Your document processing history will appear here</p>
+                    </div>
+                `;
                 return;
             }
             
@@ -769,17 +1240,17 @@
                                   item.status === 'error' ? 'result-error' : 'result-processing';
                 
                 return `
-                    <div class="result-item ${statusClass}" style="margin: 15px 0;">
-                        <div style="display: flex; justify-content: between; align-items: center;">
-                            <h5>📄 ${item.filename}</h5>
+                    <div class="result-item ${statusClass}" style="margin-bottom: 16px;">
+                        <div class="result-header">
+                            <div class="result-title">📄 ${item.filename}</div>
                             <span class="status-badge status-${item.status}">${item.status}</span>
                         </div>
-                        <div style="font-size: 14px; color: #666; margin: 8px 0;">
+                        <div style="font-size: 14px; color: #605e5c; margin: 12px 0;">
                             Size: ${(item.size / 1024 / 1024).toFixed(2)} MB • 
                             Processed: ${new Date(item.uploadTime).toLocaleString()}
                         </div>
-                        ${item.error ? `<div style="color: #dc3545; font-size: 13px;">Error: ${item.error}</div>` : ''}
-                        <div style="font-size: 11px; color: #888; margin-top: 5px;">ID: ${item.id}</div>
+                        ${item.error ? `<div style="color: #d13438; font-size: 13px; margin-top: 8px;">Error: ${item.error}</div>` : ''}
+                        <div style="font-size: 11px; color: #8a8886; margin-top: 12px; padding-top: 12px; border-top: 1px solid #f3f2f1;">ID: ${item.id}</div>
                     </div>
                 `;
             }).join('');
