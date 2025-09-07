@@ -26,7 +26,6 @@
             flex-direction: column;
         }
 
-        /* Fluent Design Header */
         .header {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
@@ -109,7 +108,6 @@
             50% { opacity: 0.5; }
         }
 
-        /* Main Content */
         .main-content {
             flex: 1;
             max-width: 1400px;
@@ -118,7 +116,6 @@
             width: 100%;
         }
 
-        /* Fluent Cards */
         .card {
             background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(20px);
@@ -156,7 +153,6 @@
             padding: 24px 32px;
         }
 
-        /* System Status Cards */
         .system-status {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -205,7 +201,6 @@
             color: #0078d4;
         }
 
-        /* Configuration Section */
         .config-card {
             margin-bottom: 24px;
         }
@@ -245,7 +240,6 @@
             box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.2);
         }
 
-        /* Navigation Tabs */
         .nav-tabs {
             display: flex;
             background: rgba(248, 249, 250, 0.8);
@@ -283,7 +277,6 @@
             color: #323130;
         }
 
-        /* Upload Zone */
         .upload-zone {
             background: linear-gradient(135deg, #f8f9fa, #ffffff);
             border: 2px dashed #d1d1d1;
@@ -300,27 +293,11 @@
             align-items: center;
         }
 
-        .upload-zone::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(0, 120, 212, 0.05) 0%, transparent 70%);
-            transition: all 0.3s ease;
-            opacity: 0;
-        }
-
         .upload-zone:hover {
             border-color: #0078d4;
             background: linear-gradient(135deg, #f0f8ff, #ffffff);
             transform: translateY(-2px);
             box-shadow: 0 8px 24px rgba(0, 120, 212, 0.15);
-        }
-
-        .upload-zone:hover::before {
-            opacity: 1;
         }
 
         .upload-zone.dragover {
@@ -398,11 +375,6 @@
             box-shadow: 0 6px 16px rgba(0, 120, 212, 0.4);
         }
 
-        .upload-btn:active {
-            transform: translateY(0);
-        }
-
-        /* Buttons */
         .btn {
             background: #0078d4;
             color: white;
@@ -431,7 +403,6 @@
             background: #edebe9;
         }
 
-        /* Processing Results */
         .result-item {
             background: white;
             border: 1px solid rgba(0, 0, 0, 0.05);
@@ -510,7 +481,6 @@
             color: #8a8886;
         }
 
-        /* Processing Steps */
         .processing-steps {
             background: #fafafa;
             border-radius: 8px;
@@ -575,7 +545,6 @@
             color: #323130;
         }
 
-        /* Empty States */
         .empty-state {
             text-align: center;
             padding: 64px 32px;
@@ -606,7 +575,6 @@
             line-height: 1.5;
         }
 
-        /* Messages */
         .message {
             padding: 16px 20px;
             border-radius: 8px;
@@ -630,7 +598,6 @@
             border: 1px solid #d13438;
         }
 
-        /* Responsive Design */
         @media (max-width: 768px) {
             .main-content {
                 padding: 16px;
@@ -664,7 +631,6 @@
             }
         }
 
-        /* Scrollbar Styling */
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -685,14 +651,13 @@
 </head>
 <body>
     <div class="app-container">
-        <!-- Fluent Header -->
         <header class="header">
             <div class="header-content">
                 <div class="header-title">
                     <div class="app-icon">📄</div>
                     <div>
                         <h1>Lease Document Manager</h1>
-                        <p>AI-powered document processing with Hunyuan translation</p>
+                        <p>AI-powered document processing with N8N automation</p>
                     </div>
                 </div>
                 <div class="header-actions">
@@ -704,13 +669,10 @@
             </div>
         </header>
 
-        <!-- Main Content -->
         <main class="main-content">
-            <!-- System Status Cards -->
             <div class="system-status">
-                <!-- Cloudinary Status -->
                 <div class="status-card">
-                    <h3>✅ Cloudinary Storage</h3>
+                    <h3>☁️ Cloudinary Storage</h3>
                     <div class="status-grid">
                         <div class="status-detail">
                             <strong>Cloud:</strong> mediaflows_86fd4d79...
@@ -727,26 +689,24 @@
                     </div>
                 </div>
 
-                <!-- Modal AI Status -->
                 <div class="status-card">
-                    <h3>🤖 Hunyuan AI System</h3>
+                    <h3>🔄 N8N Automation</h3>
                     <div class="status-grid">
                         <div class="status-detail">
-                            <strong>Model:</strong> Hunyuan-MT-7B
+                            <strong>OCR:</strong> quanara-ocr.onrender.com
                         </div>
                         <div class="status-detail">
-                            <strong>Translation:</strong> Ready
+                            <strong>Processing:</strong> Modal AI
                         </div>
                         <div class="status-detail">
-                            <strong>Extraction:</strong> Ready
+                            <strong>Storage:</strong> Pinecone
                         </div>
                         <div class="status-detail">
-                            <strong>Status:</strong> <span id="modalStatus">Checking...</span>
+                            <strong>Status:</strong> <span id="n8nStatus">Ready</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Pinecone Status -->
                 <div class="status-card">
                     <h3>🗄️ Vector Database</h3>
                     <div class="status-grid">
@@ -766,16 +726,15 @@
                 </div>
             </div>
 
-            <!-- Configuration Card -->
             <div class="card config-card">
                 <div class="card-header">
                     <div class="card-title">N8N Integration</div>
-                    <div class="card-subtitle">Configure your N8N webhook endpoint for OCR processing</div>
+                    <div class="card-subtitle">Configure your N8N webhook endpoint for document processing</div>
                 </div>
                 <div class="card-content">
                     <div class="config-grid">
                         <div class="config-item">
-                            <label class="config-label">N8N Webhook URL (Your OCR Endpoint)</label>
+                            <label class="config-label">N8N Webhook URL</label>
                             <input type="url" id="n8nUrl" class="config-input" 
                                    placeholder="https://your-n8n-instance.onrender.com/webhook/lease-upload">
                         </div>
@@ -787,7 +746,6 @@
                 </div>
             </div>
 
-            <!-- Navigation Tabs -->
             <nav class="nav-tabs">
                 <button class="nav-tab active" onclick="showTab('upload')">
                     📄 Upload Documents
@@ -800,7 +758,6 @@
                 </button>
             </nav>
 
-            <!-- Upload Tab -->
             <div id="upload-tab" class="tab-content active">
                 <div class="card">
                     <div class="upload-zone" id="uploadZone">
@@ -824,7 +781,6 @@
                 </div>
             </div>
 
-            <!-- Status Tab -->
             <div id="status-tab" class="tab-content" style="display: none;">
                 <div class="card">
                     <div class="card-header">
@@ -843,7 +799,6 @@
                 </div>
             </div>
 
-            <!-- History Tab -->
             <div id="history-tab" class="tab-content" style="display: none;">
                 <div class="card">
                     <div class="card-header">
@@ -865,56 +820,31 @@
     </div>
 
     <script>
-        // Configuration with YOUR ACTUAL SETTINGS
+        // Configuration - UPDATE WITH YOUR ACTUAL N8N WEBHOOK URL
         let config = {
-            n8nUrl: localStorage.getItem('n8nUrl') || '',
+            n8nUrl: localStorage.getItem('n8nUrl') || 'https://n8n-lease-processor.onrender.com/webhook/lease-upload',
+            queryUrl: 'https://n8n-lease-processor.onrender.com/webhook/query-lease',
             
-            // YOUR REAL CLOUDINARY CONFIGURATION:
+            // Cloudinary configuration
             cloudinaryUrl: 'https://api.cloudinary.com/v1_1/mediaflows_86fd4d79-f690-41d0-9896-d1b8f9ee5d9d/upload',
             cloudName: 'mediaflows_86fd4d79-f690-41d0-9896-d1b8f9ee5d9d',
             uploadPreset: 'lease_documents',
-            apiKey: '488918591967179',
-            
-            // YOUR MODAL ENDPOINTS:
-            modalHealthUrl: 'https://eric-18--lease-hunyuan-system-health-check.modal.run',
-            modalProcessUrl: 'https://eric-18--lease-hunyuan-system-process-lease-with-hunyuan.modal.run'
+            apiKey: '488918591967179'
         };
 
-        // Processing queue
         let processingQueue = [];
         let documentHistory = JSON.parse(localStorage.getItem('documentHistory')) || [];
 
-        // Load saved configuration
         document.getElementById('n8nUrl').value = config.n8nUrl;
 
-        // Initialize
         window.addEventListener('load', () => {
             loadDocumentHistory();
-            checkModalHealth();
             if (config.n8nUrl) {
                 testConnection();
             }
         });
 
-        async function checkModalHealth() {
-            try {
-                const response = await fetch(config.modalHealthUrl);
-                if (response.ok) {
-                    const data = await response.json();
-                    document.getElementById('modalStatus').textContent = 'Online';
-                    document.getElementById('systemStatus').textContent = 'All Systems Ready';
-                } else {
-                    throw new Error('Health check failed');
-                }
-            } catch (error) {
-                document.getElementById('modalStatus').textContent = 'Offline';
-                document.getElementById('systemStatus').textContent = 'System Issues';
-                console.error('Modal health check failed:', error);
-            }
-        }
-
         function showTab(tabName) {
-            // Hide all tabs
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.style.display = 'none';
             });
@@ -922,7 +852,6 @@
                 tab.classList.remove('active');
             });
             
-            // Show selected tab
             document.getElementById(tabName + '-tab').style.display = 'block';
             event.target.classList.add('active');
             
@@ -960,11 +889,13 @@
 
                 if (response.ok) {
                     showMessage('N8N connection successful!', 'success');
+                    document.getElementById('n8nStatus').textContent = 'Connected';
                 } else {
                     throw new Error(`HTTP ${response.status}`);
                 }
             } catch (error) {
                 showMessage(`N8N connection failed: ${error.message}`, 'error');
+                document.getElementById('n8nStatus').textContent = 'Offline';
             }
         }
 
@@ -982,7 +913,6 @@
             setTimeout(() => messageDiv.remove(), 5000);
         }
 
-        // File upload functionality
         const uploadZone = document.getElementById('uploadZone');
         const fileInput = document.getElementById('fileInput');
 
@@ -1034,7 +964,6 @@
         async function uploadAndProcessFile(file) {
             const fileId = `doc_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
             
-            // Add to processing queue
             const processItem = {
                 id: fileId,
                 filename: file.name,
@@ -1044,8 +973,7 @@
                 steps: {
                     upload: 'processing',
                     ocr: 'pending',
-                    translation: 'pending',
-                    extraction: 'pending',
+                    processing: 'pending',
                     storage: 'pending'
                 }
             };
@@ -1055,13 +983,14 @@
             updateProcessingDisplay(processItem);
 
             try {
-                // Step 1: Upload file to Cloudinary
                 updateProcessStep(fileId, 'upload', 'processing');
                 const uploadResult = await uploadFileToCloudinary(file);
                 updateProcessStep(fileId, 'upload', 'complete');
                 
-                // Step 2: Send to N8N for OCR processing
                 updateProcessStep(fileId, 'ocr', 'processing');
+                updateProcessStep(fileId, 'processing', 'processing');
+                updateProcessStep(fileId, 'storage', 'processing');
+                
                 const processResult = await sendToN8N(fileId, file.name, uploadResult.url, {
                     cloudinary_public_id: uploadResult.public_id,
                     file_format: uploadResult.format,
@@ -1069,14 +998,13 @@
                     upload_timestamp: uploadResult.created_at
                 });
                 
-                if (processResult.success) {
+                if (processResult && processResult.status === 'success') {
                     updateProcessStep(fileId, 'ocr', 'complete');
-                    updateProcessStep(fileId, 'translation', 'complete');
-                    updateProcessStep(fileId, 'extraction', 'complete');
+                    updateProcessStep(fileId, 'processing', 'complete');
                     updateProcessStep(fileId, 'storage', 'complete');
                     updateItemStatus(fileId, 'completed');
                 } else {
-                    throw new Error(processResult.error || 'Processing failed');
+                    throw new Error(processResult?.error || 'Processing failed');
                 }
 
             } catch (error) {
@@ -1087,24 +1015,17 @@
         }
 
         async function uploadFileToCloudinary(file) {
-            console.log('Starting Cloudinary upload:', file.name);
-            
             const formData = new FormData();
             
-            // Required fields
             formData.append('file', file);
             formData.append('upload_preset', config.uploadPreset);
-            
-            // Organization
             formData.append('folder', 'lease-docs');
             formData.append('resource_type', 'auto');
             
-            // Generate meaningful public ID
             const timestamp = new Date().toISOString().slice(0, 19).replace(/[-:]/g, '');
             const cleanFilename = file.name.replace(/[^a-zA-Z0-9.-]/g, '_').replace('.pdf', '');
             formData.append('public_id', `lease_${timestamp}_${cleanFilename}`);
             
-            // Add metadata
             formData.append('tags', 'lease,document,pdf,production');
             formData.append('context', JSON.stringify({
                 original_filename: file.name,
@@ -1124,7 +1045,6 @@
             }
 
             const result = await response.json();
-            console.log('Cloudinary upload success:', result);
             
             return {
                 url: result.secure_url,
@@ -1146,8 +1066,7 @@
                     fileUrl: fileUrl,
                     timestamp: new Date().toISOString(),
                     source: 'lease_drop_zone',
-                    cloudinary_metadata: metadata,
-                    modal_endpoint: config.modalProcessUrl
+                    cloudinary_metadata: metadata
                 })
             });
 
@@ -1204,8 +1123,7 @@
                 const stepNames = {
                     upload: 'Cloudinary Upload',
                     ocr: 'OCR Processing', 
-                    translation: 'Hunyuan Translation',
-                    extraction: 'AI Information Extraction',
+                    processing: 'AI Translation & Processing',
                     storage: 'Pinecone Storage'
                 };
                 
@@ -1253,8 +1171,7 @@
                     const stepNames = {
                         upload: 'Upload',
                         ocr: 'OCR', 
-                        translation: 'Translation',
-                        extraction: 'Extraction',
+                        processing: 'Processing',
                         storage: 'Storage'
                     };
                     
@@ -1332,9 +1249,6 @@
             
             historyDiv.innerHTML = historyHtml;
         }
-
-        // Check system status periodically
-        setInterval(checkModalHealth, 30000); // Check every 30 seconds
     </script>
 </body>
 </html>
