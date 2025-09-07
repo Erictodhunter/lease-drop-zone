@@ -672,16 +672,16 @@
         <main class="main-content">
             <div class="system-status">
                 <div class="status-card">
-                    <h3>☁️ Cloudinary Storage</h3>
+                    <h3>☁️ Vercel Blob Storage</h3>
                     <div class="status-grid">
                         <div class="status-detail">
-                            <strong>Cloud:</strong> mediaflows_86fd4d79...
+                            <strong>Storage:</strong> Vercel Blob
                         </div>
                         <div class="status-detail">
-                            <strong>Preset:</strong> lease_documents
+                            <strong>Endpoint:</strong> /api/upload
                         </div>
                         <div class="status-detail">
-                            <strong>Folder:</strong> lease-docs
+                            <strong>Access:</strong> Public
                         </div>
                         <div class="status-detail">
                             <strong>Status:</strong> Connected
@@ -736,7 +736,7 @@
                         <div class="config-item">
                             <label class="config-label">N8N Webhook URL</label>
                             <input type="url" id="n8nUrl" class="config-input" 
-                                   placeholder="https://your-n8n-instance.onrender.com/webhook/lease-upload">
+                                   placeholder="https://n8n-lease-processor.onrender.com/webhook/lease-upload">
                         </div>
                         <div style="display: flex; gap: 12px;">
                             <button onclick="saveConfig()" class="btn">Save Configuration</button>
@@ -820,16 +820,10 @@
     </div>
 
     <script>
-        // Configuration - UPDATE WITH YOUR ACTUAL N8N WEBHOOK URL
         let config = {
             n8nUrl: localStorage.getItem('n8nUrl') || 'https://n8n-lease-processor.onrender.com/webhook/lease-upload',
             queryUrl: 'https://n8n-lease-processor.onrender.com/webhook/query-lease',
-            
-            // Cloudinary configuration
-            cloudinaryUrl: 'https://api.cloudinary.com/v1_1/mediaflows_86fd4d79-f690-41d0-9896-d1b8f9ee5d9d/upload',
-            cloudName: 'mediaflows_86fd4d79-f690-41d0-9896-d1b8f9ee5d9d',
-            uploadPreset: 'lease_documents',
-            apiKey: '488918591967179'
+            uploadUrl: '/api/upload'
         };
 
         let processingQueue = [];
@@ -984,7 +978,7 @@
 
             try {
                 updateProcessStep(fileId, 'upload', 'processing');
-                const uploadResult = await uploadFileToCloudinary(file);
+                const uploadResult = await uploadFileToVercelBlob(file);
                 updateProcessStep(fileId, 'upload', 'complete');
                 
                 updateProcessStep(fileId, 'ocr', 'processing');
@@ -992,10 +986,10 @@
                 updateProcessStep(fileId, 'storage', 'processing');
                 
                 const processResult = await sendToN8N(fileId, file.name, uploadResult.url, {
-                    cloudinary_public_id: uploadResult.public_id,
-                    file_format: uploadResult.format,
-                    file_size_bytes: uploadResult.bytes,
-                    upload_timestamp: uploadResult.created_at
+                    vercel_blob_url: uploadResult.url,
+                    original_filename: uploadResult.filename,
+                    file_size_bytes: uploadResult.size,
+                    upload_timestamp: uploadResult.uploadedAt
                 });
                 
                 if (processResult && processResult.status === 'success') {
@@ -1014,43 +1008,32 @@
             }
         }
 
-        async function uploadFileToCloudinary(file) {
-            const formData = new FormData();
-            
-            // ONLY these fields for unsigned upload
-            formData.append('file', file);
-            formData.append('upload_preset', config.uploadPreset);
-            formData.append('folder', 'lease-docs');
-            
-            const timestamp = new Date().toISOString().slice(0, 19).replace(/[-:]/g, '');
-            const cleanFilename = file.name.replace(/[^a-zA-Z0-9.-]/g, '_').replace('.pdf', '');
-            formData.append('public_id', `lease_${timestamp}_${cleanFilename}`);
-            
-            formData.append('tags', 'lease,document,pdf,production');
-            
-            // DO NOT include api_key for unsigned uploads
-            // DO NOT include signature for unsigned uploads
+        async function uploadFileToVercelBlob(file) {
+            const base64 = await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const result = reader.result.split(',')[1];
+                    resolve(result);
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
 
-            const response = await fetch(config.cloudinaryUrl, {
+            const response = await fetch(config.uploadUrl, {
                 method: 'POST',
-                body: formData
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    filename: file.name,
+                    fileData: base64
+                })
             });
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
-                throw new Error(`Cloudinary upload failed: ${response.status} - ${errorData.message || 'Unknown error'}`);
+                throw new Error(`Upload failed: ${response.status} - ${errorData.error || 'Unknown error'}`);
             }
 
-            const result = await response.json();
-            
-            return {
-                url: result.secure_url,
-                public_id: result.public_id,
-                format: result.format,
-                bytes: result.bytes,
-                created_at: result.created_at,
-                folder: result.folder
-            };
+            return await response.json();
         }
 
         async function sendToN8N(fileId, filename, fileUrl, metadata) {
@@ -1063,7 +1046,7 @@
                     fileUrl: fileUrl,
                     timestamp: new Date().toISOString(),
                     source: 'lease_drop_zone',
-                    cloudinary_metadata: metadata
+                    vercel_metadata: metadata
                 })
             });
 
@@ -1118,7 +1101,7 @@
             
             const stepsHtml = Object.entries(item.steps).map(([step, status]) => {
                 const stepNames = {
-                    upload: 'Cloudinary Upload',
+                    upload: 'Vercel Blob Upload',
                     ocr: 'OCR Processing', 
                     processing: 'AI Translation & Processing',
                     storage: 'Pinecone Storage'
