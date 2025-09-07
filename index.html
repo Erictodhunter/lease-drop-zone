@@ -1017,22 +1017,19 @@
         async function uploadFileToCloudinary(file) {
             const formData = new FormData();
             
+            // ONLY these fields for unsigned upload
             formData.append('file', file);
             formData.append('upload_preset', config.uploadPreset);
             formData.append('folder', 'lease-docs');
-            formData.append('resource_type', 'auto');
             
             const timestamp = new Date().toISOString().slice(0, 19).replace(/[-:]/g, '');
             const cleanFilename = file.name.replace(/[^a-zA-Z0-9.-]/g, '_').replace('.pdf', '');
             formData.append('public_id', `lease_${timestamp}_${cleanFilename}`);
             
             formData.append('tags', 'lease,document,pdf,production');
-            formData.append('context', JSON.stringify({
-                original_filename: file.name,
-                upload_source: 'lease_drop_zone',
-                upload_timestamp: new Date().toISOString(),
-                file_size_mb: (file.size / 1024 / 1024).toFixed(2)
-            }));
+            
+            // DO NOT include api_key for unsigned uploads
+            // DO NOT include signature for unsigned uploads
 
             const response = await fetch(config.cloudinaryUrl, {
                 method: 'POST',
